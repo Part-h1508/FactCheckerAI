@@ -1,0 +1,66 @@
+# imports
+import streamlit as st
+import json
+
+from prompt import build_prompt
+from llm_handler import analyze
+
+# title
+st.title("Debate Fact Checker")
+
+# input box
+text = st.text_area("Enter debate text")
+
+# button
+if st.button("Analyze"):
+
+    # check if empty
+    if text.strip() == "":
+        st.write("enter some text first")
+
+    else:
+        st.write("processing...")
+
+        # build prompt
+        prompt = build_prompt(text)
+
+        # send to model
+        result = analyze(prompt)
+
+        # try to read json
+        try:
+            data = json.loads(result)
+
+            # loop through results
+# trying to extract json properly
+try:
+    # sometimes model adds extra text, so we clean it
+    start = result.find("[")
+    end = result.rfind("]") + 1
+
+    clean_json = result[start:end]
+
+    data = json.loads(clean_json)
+
+    # loop through results
+    for item in data:
+
+        st.write("Claim:", item["claim"])
+
+        verdict = item["verdict"]
+
+        if verdict == "TRUE":
+            st.success(verdict)
+
+        elif verdict == "FALSE":
+            st.error(verdict)
+
+        else:
+            st.warning(verdict)
+
+        st.write(item["explanation"])
+        st.write("-----")
+
+except:
+    st.write("could not parse properly, raw output below:")
+    st.write(result)

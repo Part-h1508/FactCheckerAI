@@ -17,7 +17,7 @@ if api_key is None:
 genai.configure(api_key=api_key)
 
 # using flash model (fast + free tier friendly)
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-2.0-flash")
 
 # function to send prompt to model
 def analyze(prompt):

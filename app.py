@@ -28,34 +28,56 @@ if st.button("Analyze"):
         result = analyze(prompt)
 
         # try to read json properly
-        try:
-            # sometimes model adds extra text, so we clean it
-            start = result.find("[")
-            end = result.rfind("]") + 1
+        # trying to extract json properly
+try:
+    start = result.find("{")
+    end = result.rfind("}") + 1
 
-            clean_json = result[start:end]
+    clean_json = result[start:end]
 
-            data = json.loads(clean_json)
+    data = json.loads(clean_json)
 
-            # loop through results
-            for item in data:
+    # loop through speakers
+    for speaker in data["speakers"]:
 
-                st.write("Claim:", item["claim"])
+        st.subheader(speaker["name"])
 
-                verdict = item["verdict"]
+        score = speaker["score"]
 
-                if verdict == "TRUE":
-                    st.success(verdict)
+        # show score
+        st.write("Score:", score)
 
-                elif verdict == "FALSE":
-                    st.error(verdict)
+        # small visual indicator
+        if score >= 0.7:
+            st.success("High accuracy")
 
-                else:
-                    st.warning(verdict)
+        elif score >= 0.4:
+            st.warning("Moderate accuracy")
 
-                st.write(item["explanation"])
-                st.write("-----")
+        else:
+            st.error("Low accuracy")
 
-        except:
-            st.write("could not parse properly, raw output below:")
-            st.write(result)
+        st.write("Claims:")
+
+        # loop through claims
+        for item in speaker["claims"]:
+
+            st.write("•", item["claim"])
+
+            verdict = item["verdict"]
+
+            if verdict == "TRUE":
+                st.success(verdict)
+
+            elif verdict == "FALSE":
+                st.error(verdict)
+
+            else:
+                st.warning(verdict)
+
+            st.write(item["explanation"])
+            st.write("---")
+
+except:
+    st.write("could not parse properly, raw output below:")
+    st.write(result)

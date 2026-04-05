@@ -27,13 +27,8 @@ if st.button("Analyze"):
         # send to model
         result = analyze(prompt)
 
-        # try to read json
+        # try to read json properly
         try:
-            data = json.loads(result)
-
-            # loop through results
-# trying to extract json properly
-try:
     # sometimes model adds extra text, so we clean it
     start = result.find("[")
     end = result.rfind("]") + 1

@@ -6,8 +6,8 @@ from prompt import build_prompt
 from llm_handler import analyze
 
 # title
-st.title("Debate Fact Checker")
-
+st.title("AI Debate Fact Checker")
+st.caption("Analyzes conversations, verifies claims, and scores participants based on factual accuracy")
 # input box
 text = st.text_area("Enter debate text")
 
@@ -28,56 +28,55 @@ if st.button("Analyze"):
         result = analyze(prompt)
 
         # try to read json properly
-        # trying to extract json properly
-try:
-    start = result.find("{")
-    end = result.rfind("}") + 1
+        try:
+            start = result.find("{")
+            end = result.rfind("}") + 1
 
-    clean_json = result[start:end]
+            clean_json = result[start:end]
 
-    data = json.loads(clean_json)
+            data = json.loads(clean_json)
 
-    # loop through speakers
-    for speaker in data["speakers"]:
+            # loop through speakers
+            for speaker in data["speakers"]:
 
-        st.subheader(speaker["name"])
+                st.subheader(speaker["name"])
 
-        score = speaker["score"]
+                score = speaker["score"]
 
-        # show score
-        st.write("Score:", score)
+                # show score
+                st.write("Score:", score)
 
-        # small visual indicator
-        if score >= 0.7:
-            st.success("High accuracy")
+                # small visual indicator
+                if score >= 0.7:
+                    st.success("High accuracy")
 
-        elif score >= 0.4:
-            st.warning("Moderate accuracy")
+                elif score >= 0.4:
+                    st.warning("Moderate accuracy")
 
-        else:
-            st.error("Low accuracy")
+                else:
+                    st.error("Low accuracy")
 
-        st.write("Claims:")
+                st.write("Claims:")
 
-        # loop through claims
-        for item in speaker["claims"]:
+                # loop through claims
+                for item in speaker["claims"]:
 
-            st.write("•", item["claim"])
+                    st.write("•", item["claim"])
 
-            verdict = item["verdict"]
+                    verdict = item["verdict"]
 
-            if verdict == "TRUE":
-                st.success(verdict)
+                    if verdict == "TRUE":
+                        st.success(verdict)
 
-            elif verdict == "FALSE":
-                st.error(verdict)
+                    elif verdict == "FALSE":
+                        st.error(verdict)
 
-            else:
-                st.warning(verdict)
+                    else:
+                        st.warning(verdict)
 
-            st.write(item["explanation"])
-            st.write("---")
+                    st.write(item["explanation"])
+                    st.write("---")
 
-except:
-    st.write("could not parse properly, raw output below:")
-    st.write(result)
+        except:
+            st.write("could not parse properly, raw output below:")
+            st.write(result)
